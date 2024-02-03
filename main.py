@@ -11,15 +11,36 @@ class GraphPlotterApp(QWidget):
     def __init__(self):
         super().__init__()
         self.setStyleSheet("background-color: white;")
-        self.setWindowTitle("Graph Plotter App")
+        self.setWindowTitle("Vizualization")
         self.setGeometry(100, 100, 500, 350)
         self.graph_settings = {
-            "AoI vs PKeep": {"selected": False, "x": "pkeep", "y": "value_aoi", "width": 5, "height": 5, "color": 'blue', "markers": 0},
-            "CLR vs PKeep": {"selected": False, "x": "pkeep", "y": "value_clr", "width": 5, "height": 5, "color": 'green', "markers": 0},
-            "PAoI vs PKeep": {"selected": False, "x": "pkeep", "y": "value_paoi", "width": 5, "height": 5, "color": 'red', "markers": 0},
-            "PDR vs PKeep": {"selected": False, "x": "pkeep", "y": "value_pdr", "width": 5, "height": 5, "color": 'red', "markers": 0},
-            "PLR vs PKeep": {"selected": False, "x": "pkeep", "y": "value_plr", "width": 5, "height": 5, "color": 'red', "markers": 0},
-            "PDR vs PLR": {"selected": False, "x": "value_plr", "y": "value_pdr", "width": 5, "height": 5, "color": 'red', "markers": 0},
+            "AoI vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_aoi",
+                         "width": 5, "height": 5, "color": 'blue', "markers": 5},
+            "CLR vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_clr",
+                         "width": 5, "height": 5, "color": 'green', "markers": 5},
+            "PAoI vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_paoi",
+                          "width": 5, "height": 5, "color": 'red', "markers": 5},
+            "PDR vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_pdr",
+                         "width": 5, "height": 5, "color": 'red', "markers": 5},
+            "PLR vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_plr",
+                         "width": 5, "height": 5, "color": 'red', "markers": 5},
+            "PDR vs PLR": {"csv": "Matrix_RC515.csv", "selected": False, "x": "value_plr", "y": "value_pdr", "width": 5,
+                           "height": 5, "color": 'red', "markers": 5},
+            "AoI vs PKeep": {"csv": "Average_aoi.csv", "selected": False, "x": "pkeep", "y": "average_aoi", "width": 5,
+                             "height": 5, "color": 'blue',
+                             "markers": 5},
+            "CLR vs PKeep": {"csv": "Average_clr.csv", "selected": False, "x": "pkeep", "y": "average_clr", "width": 5,
+                             "height": 5, "color": 'green',
+                             "markers": 5},
+            "PAoI vs PKeep": {"csv": "Average_paoi.csv", "selected": False, "x": "pkeep", "y": "average_paoi",
+                              "width": 5, "height": 5, "color": 'red',
+                              "markers": 5},
+            "PDR vs PKeep": {"csv": "Average_pdr.csv", "selected": False, "x": "pkeep", "y": "average_pdr", "width": 5,
+                             "height": 5, "color": 'red',
+                             "markers": 5},
+            "PLR vs PKeep": {"csv": "Average_plr.csv", "selected": False, "x": "pkeep", "y": "average_plr", "width": 5,
+                             "height": 5, "color": 'red',
+                             "markers": 5},
         }
 
         self.init_ui()
@@ -53,7 +74,6 @@ class GraphPlotterApp(QWidget):
         main_layout = QVBoxLayout()
         main_layout.addLayout(control_layout)
 
-
         # Устанавливаем компоновку для окна
         self.setLayout(main_layout)
 
@@ -63,12 +83,14 @@ class GraphPlotterApp(QWidget):
         width_spinbox = QSpinBox()
         width_spinbox.setRange(1, 2000)
         width_spinbox.setValue(self.graph_settings[graph_name]["width"])
-        width_spinbox.valueChanged.connect(lambda value, name=graph_name: self.update_graph_settings(name, "width", value))
+        width_spinbox.valueChanged.connect(
+            lambda value, name=graph_name: self.update_graph_settings(name, "width", value))
 
         height_spinbox = QSpinBox()
         height_spinbox.setRange(1, 2000)
         height_spinbox.setValue(self.graph_settings[graph_name]["height"])
-        height_spinbox.valueChanged.connect(lambda value, name=graph_name: self.update_graph_settings(name, "height", value))
+        height_spinbox.valueChanged.connect(
+            lambda value, name=graph_name: self.update_graph_settings(name, "height", value))
 
         color_button = QPushButton("Выбрать цвет")
         color_button.clicked.connect(lambda name=graph_name: self.choose_color(name))
@@ -76,7 +98,8 @@ class GraphPlotterApp(QWidget):
         markers_spinbox = QSpinBox()
         markers_spinbox.setRange(0, 100)
         markers_spinbox.setValue(self.graph_settings[graph_name]["markers"])
-        markers_spinbox.valueChanged.connect(lambda value, name=graph_name: self.update_graph_settings(name, "markers", value))
+        markers_spinbox.valueChanged.connect(
+            lambda value, name=graph_name: self.update_graph_settings(name, "markers", value))
 
         settings_layout.addWidget(QLabel("Ширина:"))
         settings_layout.addWidget(width_spinbox)
@@ -101,11 +124,12 @@ class GraphPlotterApp(QWidget):
         self.graph_settings[graph_name][setting_name] = value
 
     def plot_selected_graphs(self):
-        df = pd.read_csv('Matrix_RC515.csv', delimiter=',')
+
         # Строим выбранные графики
         for kpi_name, kpi in self.graph_settings.items():
+            df = pd.read_csv(kpi["csv"], delimiter=',')
             if kpi["selected"] == True:
-                fig = plt.figure(kpi_name, figsize=(kpi["width"],kpi["height"]))
+                fig = plt.figure(kpi_name, figsize=(kpi["width"], kpi["height"]))
 
                 x = df[kpi["x"]]
                 y = df[kpi["y"]]
@@ -116,7 +140,6 @@ class GraphPlotterApp(QWidget):
                 plt.xlabel(kpi["x"])
                 plt.ylabel(kpi["y"])
                 plt.show()
-
 
 
 if __name__ == "__main__":
