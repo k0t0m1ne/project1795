@@ -1,149 +1,164 @@
-import sys
-
+import tkinter as tk
 import pandas as pd
-from PyQt5.QtWidgets import QApplication, QWidget, QVBoxLayout, QLabel, QComboBox, QSpinBox, QColorDialog, QPushButton, \
-    QCheckBox, QHBoxLayout
-from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
+from tkinter import ttk
+from tkinter import colorchooser
 import matplotlib.pyplot as plt
 
 
-class GraphPlotterApp(QWidget):
+class GraphPlotterApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.setStyleSheet("background-color: white;")
-        self.setWindowTitle("Vizualization")
-        self.setGeometry(100, 100, 500, 350)
+        self.title("Vizualization")
+        self.geometry("350x600")
+        self.csv_file = ""
         self.graph_settings = {
-            "AoI vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_aoi",
-                         "width": 5, "height": 5, "color": 'blue', "markers": 5},
-            "CLR vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_clr",
-                         "width": 5, "height": 5, "color": 'green', "markers": 5},
-            "PAoI vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_paoi",
-                          "width": 5, "height": 5, "color": 'red', "markers": 5},
-            "PDR vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_pdr",
-                         "width": 5, "height": 5, "color": 'red', "markers": 5},
-            "PLR vs D": {"csv": "Matrix_RC515.csv", "selected": False, "x": "region_value", "y": "value_plr",
-                         "width": 5, "height": 5, "color": 'red', "markers": 5},
-            "PDR vs PLR": {"csv": "Matrix_RC515.csv", "selected": False, "x": "value_plr", "y": "value_pdr", "width": 5,
-                           "height": 5, "color": 'red', "markers": 5},
-            "AoI vs PKeep": {"csv": "Average_aoi.csv", "selected": False, "x": "pkeep", "y": "average_aoi", "width": 5,
-                             "height": 5, "color": 'blue',
-                             "markers": 5},
-            "CLR vs PKeep": {"csv": "Average_clr.csv", "selected": False, "x": "pkeep", "y": "average_clr", "width": 5,
-                             "height": 5, "color": 'green',
-                             "markers": 5},
-            "PAoI vs PKeep": {"csv": "Average_paoi.csv", "selected": False, "x": "pkeep", "y": "average_paoi",
-                              "width": 5, "height": 5, "color": 'red',
-                              "markers": 5},
-            "PDR vs PKeep": {"csv": "Average_pdr.csv", "selected": False, "x": "pkeep", "y": "average_pdr", "width": 5,
-                             "height": 5, "color": 'red',
-                             "markers": 5},
-            "PLR vs PKeep": {"csv": "Average_plr.csv", "selected": False, "x": "pkeep", "y": "average_plr", "width": 5,
-                             "height": 5, "color": 'red',
-                             "markers": 5},
+            "AoI vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_aoi",
+                         "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'blue', "markers": 'None'},
+            "CLR vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_clr",
+                         "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'green', "markers": 'None'},
+            "PAoI vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_paoi",
+                          "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
+            "PDR vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_pdr",
+                         "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
+            "PLR vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_plr",
+                         "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
+            "PDR vs PLR": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "value_plr", "y": "value_pdr",
+                           "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
+            "AoI vs PKeep": {"csv": "Average_aoi.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_aoi",
+                             "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'blue',
+                             "markers": 'None'},
+            "CLR vs PKeep": {"csv": "Average_clr.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_clr",
+                             "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'green',
+                             "markers": 'None'},
+            "PAoI vs PKeep": {"csv": "Average_paoi.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_paoi",
+                              "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
+                         "ylim0": tk.DoubleVar(value=0),    "ylim1": tk.DoubleVar(value=1),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red',
+                              "markers": 'None'},
+            "PDR vs PKeep": {"csv": "Average_pdr.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_pdr",
+                             "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red',
+                             "markers": 'None'},
+            "PLR vs PKeep": {"csv": "Average_plr.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_plr", "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
+                         "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
+                         "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red',
+                             "markers": 'None'},
         }
 
         self.init_ui()
 
     def init_ui(self):
-        # Создаем графический виджет
+        self.main_frame = ttk.Frame(self)
+        self.main_frame.pack(fill="both", expand=True)
 
-        # Создаем элементы управления
-        self.graph_selectors = {}
-        self.checkbox_layout = QVBoxLayout()
+        self.graph_frame = ttk.Frame(self.main_frame)
+        self.graph_frame.pack(fill="both", expand=True)
+
+        self.scrollbar = ttk.Scrollbar(self.graph_frame, orient="vertical")
+        self.scrollbar.pack(side="right", fill="y")
+
+        self.canvas = tk.Canvas(self.graph_frame, yscrollcommand=self.scrollbar.set)
+        self.canvas.pack(side="left", fill="both", expand=True)
+
+        self.scrollbar.config(command=self.canvas.yview)
+
+        self.graph_inner_frame = ttk.Frame(self.canvas)
+        self.canvas.create_window((0, 0), window=self.graph_inner_frame, anchor="nw")
+
+        self.graph_inner_frame.bind("<Configure>",
+                                    lambda e: self.canvas.configure(scrollregion=self.canvas.bbox("all")))
+
+        plot_button = ttk.Button(self.main_frame, text="Построить выбранные графики",
+                                 command=self.plot_selected_graphs)
+        plot_button.pack(side="top", padx=10, pady=10)
 
         for graph_name, settings in self.graph_settings.items():
-            checkbox = QCheckBox(graph_name)
-            checkbox.setChecked(settings["selected"])
-            checkbox.stateChanged.connect(lambda state, name=graph_name: self.toggle_graph_checkbox(state, name))
-            self.graph_selectors[graph_name] = checkbox
+            graph_label_frame = ttk.LabelFrame(self.graph_inner_frame, text=graph_name)
+            graph_label_frame.pack(fill="x", padx=10, pady=5, anchor="nw")
 
-            settings_layout = self.create_settings_layout(graph_name)
-            self.checkbox_layout.addWidget(checkbox)
-            self.checkbox_layout.addLayout(settings_layout)
+            checkbox = ttk.Checkbutton(graph_label_frame, text="Построить", variable=settings["selected"])
+            checkbox.grid(row=0, column=0, padx=5, pady=5, sticky="w")
+            settings["checkbox"] = checkbox
 
-        plot_button = QPushButton("Построить выбранные графики")
-        plot_button.clicked.connect(self.plot_selected_graphs)
+            ttk.Label(graph_label_frame, text="Маркер:").grid(row=1, column=0, padx=5, pady=5, sticky="w")
+            marker_combobox = ttk.Combobox(graph_label_frame, values=['None','o', '.', 'x', 's'], state="readonly", width=6)
+            marker_combobox.grid(row=1, column=1, padx=5, pady=5, sticky="w")
+            marker_combobox.set(settings["markers"])
+            settings["marker_combobox"] = marker_combobox
 
-        # Создаем компоновку для элементов управления
-        control_layout = QVBoxLayout()
-        control_layout.addLayout(self.checkbox_layout)
-        control_layout.addWidget(plot_button)
+            ttk.Label(graph_label_frame, text="Цвет:").grid(row=2, column=0, padx=5, pady=5, sticky="w")
+            color_button = ttk.Button(graph_label_frame, text="Выбрать цвет",
+                                      command=lambda graph=graph_name: self.choose_color(graph))
+            color_button.grid(row=2, column=1, padx=0, pady=5, sticky="w")
+            settings["color_button"] = color_button
 
-        # Создаем основную компоновку
-        main_layout = QVBoxLayout()
-        main_layout.addLayout(control_layout)
+            self.create_setting_input(graph_label_frame, "Ширина:", settings["width"], 3, 0, settings)
+            self.create_setting_input(graph_label_frame, "Высота:", settings["height"], 3, 2, settings)
+            self.create_setting_input(graph_label_frame, "Xlim от:", settings["xlim0"], 5, 0, settings)
+            self.create_setting_input(graph_label_frame, "до:", settings["xlim1"], 5, 2, settings)
+            self.create_setting_input(graph_label_frame, "Ylim от:", settings["ylim0"], 6, 0, settings)
+            self.create_setting_input(graph_label_frame, "до:", settings["ylim1"], 6, 2, settings)
 
-        # Устанавливаем компоновку для окна
-        self.setLayout(main_layout)
+    def create_setting_input(self, parent_frame, label_text, setting_var, row, column, settings):
+        ttk.Label(parent_frame, text=label_text).grid(row=row, column=column, padx=5, pady=5, sticky="w")
+        setting_spinbox = ttk.Spinbox(parent_frame, from_=0, to=1000.00, increment=1, width=5,
+                                      textvariable=setting_var)
+        setting_spinbox.grid(row=row, column=column + 1, padx=5, pady=5, sticky="w")
+        setting_spinbox.bind("<FocusOut>",
+                             lambda event, var=setting_var, setting=settings: self.update_setting(event, var,
+                                                                                                  setting))
+        settings[f"{label_text.lower()}_spinbox"] = setting_spinbox
 
-    def create_settings_layout(self, graph_name):
-        settings_layout = QHBoxLayout()
-
-        width_spinbox = QSpinBox()
-        width_spinbox.setRange(1, 2000)
-        width_spinbox.setValue(self.graph_settings[graph_name]["width"])
-        width_spinbox.valueChanged.connect(
-            lambda value, name=graph_name: self.update_graph_settings(name, "width", value))
-
-        height_spinbox = QSpinBox()
-        height_spinbox.setRange(1, 2000)
-        height_spinbox.setValue(self.graph_settings[graph_name]["height"])
-        height_spinbox.valueChanged.connect(
-            lambda value, name=graph_name: self.update_graph_settings(name, "height", value))
-
-        color_button = QPushButton("Выбрать цвет")
-        color_button.clicked.connect(lambda name=graph_name: self.choose_color(name))
-
-        markers_spinbox = QSpinBox()
-        markers_spinbox.setRange(0, 100)
-        markers_spinbox.setValue(self.graph_settings[graph_name]["markers"])
-        markers_spinbox.valueChanged.connect(
-            lambda value, name=graph_name: self.update_graph_settings(name, "markers", value))
-
-        settings_layout.addWidget(QLabel("Ширина:"))
-        settings_layout.addWidget(width_spinbox)
-        settings_layout.addWidget(QLabel("Высота:"))
-        settings_layout.addWidget(height_spinbox)
-
-        settings_layout.addWidget(color_button)
-        settings_layout.addWidget(QLabel("Маркеры:"))
-        settings_layout.addWidget(markers_spinbox)
-
-        return settings_layout
-
+    def update_setting(self, event, var, setting):
+        new_value = float(var.get())
+        setting[var._name] = new_value
     def choose_color(self, graph_name):
-        color = QColorDialog.getColor()
-        if color.isValid():
-            self.graph_settings[graph_name]["color"] = color.name()
-
-    def toggle_graph_checkbox(self, state, graph_name):
-        self.graph_settings[graph_name]["selected"] = state == 2
-
-    def update_graph_settings(self, graph_name, setting_name, value):
-        self.graph_settings[graph_name][setting_name] = value
+        color = colorchooser.askcolor()[1]
+        if color:
+            self.graph_settings[graph_name]["color"] = color
 
     def plot_selected_graphs(self):
+        for kpi_name, settings in self.graph_settings.items():
+            if settings["selected"].get():
+                df = pd.read_csv(settings["csv"], delimiter=',')
+                fig = plt.figure(kpi_name, figsize=(settings["width"].get(), settings["height"].get()))
 
-        # Строим выбранные графики
-        for kpi_name, kpi in self.graph_settings.items():
-            df = pd.read_csv(kpi["csv"], delimiter=',')
-            if kpi["selected"] == True:
-                fig = plt.figure(kpi_name, figsize=(kpi["width"], kpi["height"]))
-
-                x = df[kpi["x"]]
-                y = df[kpi["y"]]
-                plt.plot(x, y, label=kpi_name, color=kpi["color"], marker='o',
-                         markersize=kpi["markers"])
+                x = df[settings["x"]]
+                y = df[settings["y"]]
+                plt.plot(x, y, label=kpi_name, color=settings["color"], marker=settings["marker_combobox"].get(),
+                         markersize=7)
+                plt.title(label=kpi_name)
                 plt.grid()
                 plt.legend()
-                plt.xlabel(kpi["x"])
-                plt.ylabel(kpi["y"])
+                plt.xlim(settings["xlim0"].get(), settings["xlim1"].get())
+                plt.ylim(settings["ylim0"].get(), settings["ylim1"].get())
+                plt.xlabel(settings["x"])
+                plt.ylabel(settings["y"])
+                name_of_file = f'{settings["csv"].replace(".csv", "")}_{kpi_name.replace(" ", "_")}'
+                plt.savefig(f'{name_of_file}.eps')
+                plt.savefig(f'{name_of_file}.png')
                 plt.show()
 
 
-if __name__ == "__main__":
-    app = QApplication(sys.argv)
-    window = GraphPlotterApp()
-    window.show()
-    sys.exit(app.exec_())
+
+app = GraphPlotterApp()
+app.mainloop()
+
+
