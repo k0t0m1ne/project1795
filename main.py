@@ -12,51 +12,51 @@ class GraphPlotterApp(tk.Tk):
         self.geometry("350x600")
         self.csv_file = ""
         self.graph_settings = {
-            "AoI vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_aoi",
+            "AoI vs D": {"csv": "metrics_distance.csv", "selected": tk.BooleanVar(value=False), "x": "region_max_distance", "y": "mean_aoi",
                          "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'blue', "markers": 'None'},
-            "CLR vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_clr",
+            "CLR vs D": {"csv": "metrics_distance.csv", "selected": tk.BooleanVar(value=False), "x": "region_max_distance", "y": "CLR",
                          "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'green', "markers": 'None'},
-            "PAoI vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_paoi",
+            "PAoI vs D": {"csv": "metrics_distance.csv", "selected": tk.BooleanVar(value=False), "x": "region_max_distance", "y": "mean_paoi",
                           "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
-            "PDR vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_pdr",
+            "PDR vs D": {"csv": "metrics_distance.csv", "selected": tk.BooleanVar(value=False), "x": "region_max_distance", "y": "PDR",
                          "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
-            "PLR vs D": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "region_value", "y": "value_plr",
+            "PLR vs D": {"csv": "metrics_distance.csv", "selected": tk.BooleanVar(value=False), "x": "region_max_distance", "y": "PLR",
                          "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1000),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=2),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
-            "PDR vs PLR": {"csv": "Matrix_RC515.csv", "selected": tk.BooleanVar(value=False), "x": "value_plr", "y": "value_pdr",
+            "PDR vs PLR": {"csv": "metrics_distance.csv", "selected": tk.BooleanVar(value=False), "x": "PLR", "y": "PDR",
                            "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red', "markers": 'None'},
-            "AoI vs PKeep": {"csv": "Average_aoi.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_aoi",
+            "AoI vs PKeep": {"csv": "avg_metrics_parameter.csv", "selected": tk.BooleanVar(value=False), "x": "var_parameter", "y": "mean_aoi",
                              "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'blue',
                              "markers": 'None'},
-            "CLR vs PKeep": {"csv": "Average_clr.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_clr",
+            "CLR vs PKeep": {"csv": "avg_metrics_parameter.csv", "selected": tk.BooleanVar(value=False), "x": "var_parameter", "y": "CLR",
                              "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'green',
                              "markers": 'None'},
-            "PAoI vs PKeep": {"csv": "Average_paoi.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_paoi",
+            "PAoI vs PKeep": {"csv": "avg_metrics_parameter.csv", "selected": tk.BooleanVar(value=False), "x": "var_parameter", "y": "mean_paoi",
                               "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
                          "ylim0": tk.DoubleVar(value=0),    "ylim1": tk.DoubleVar(value=1),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red',
                               "markers": 'None'},
-            "PDR vs PKeep": {"csv": "Average_pdr.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_pdr",
+            "PDR vs PKeep": {"csv": "avg_metrics_parameter.csv", "selected": tk.BooleanVar(value=False), "x": "var_parameter", "y": "PDR",
                              "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red',
                              "markers": 'None'},
-            "PLR vs PKeep": {"csv": "Average_plr.csv", "selected": tk.BooleanVar(value=False), "x": "pkeep", "y": "average_plr", "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
+            "PLR vs PKeep": {"csv": "avg_metrics_parameter.csv", "selected": tk.BooleanVar(value=False), "x": "var_parameter", "y": "PLR", "xlim0": tk.DoubleVar(value=0), "xlim1": tk.DoubleVar(value=1),
                          "ylim0": tk.DoubleVar(value=0), "ylim1": tk.DoubleVar(value=1),
                          "width": tk.DoubleVar(value=5), "height": tk.DoubleVar(value=5), "color": 'red',
                              "markers": 'None'},
@@ -151,11 +151,10 @@ class GraphPlotterApp(tk.Tk):
                 plt.ylim(settings["ylim0"].get(), settings["ylim1"].get())
                 plt.xlabel(settings["x"])
                 plt.ylabel(settings["y"])
-                name_of_file = f'{settings["csv"].replace(".csv", "")}_{kpi_name.replace(" ", "_")}'
+                name_of_file = f'visualisations/{settings["csv"].replace(".csv", "")}_{kpi_name.replace(" ", "_")}'
                 plt.savefig(f'{name_of_file}.eps')
                 plt.savefig(f'{name_of_file}.png')
                 plt.show()
-
 
 
 app = GraphPlotterApp()
